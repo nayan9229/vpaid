@@ -8,7 +8,7 @@
 /**
  * @constructor
  */
-var VpaidVideoPlayer = function () {
+ var VpaidVideoPlayer = function () {
   /**
    * The slot is the div element on the main page that the ad is supposed to
    * occupy.
@@ -28,6 +28,7 @@ var VpaidVideoPlayer = function () {
   this.isAnimating_ = false;
   this.ad = false;
   this.logo_ = null;
+  this.tag_parent_ = null;
 
   /**
    * An object containing all registered events.  These events are all
@@ -188,8 +189,21 @@ VpaidVideoPlayer.prototype.timeUpdateHandler_ = function () {
     } else {
       if (Math.round(this.videoSlot_.currentTime) % 30 === 0) {
         mThis.ad = true;
-        this.videoelement_.src =
-          "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4";
+        var items = [
+          "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+          "https://iab-publicfiles.s3.amazonaws.com/vast/VAST-4.0-Short-Intro.mp4",
+          "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+          "https://iab-publicfiles.s3.amazonaws.com/vast/VAST-4.0-Short-Intro.mp4",
+          "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+          "https://iab-publicfiles.s3.amazonaws.com/vast/VAST-4.0-Short-Intro.mp4",
+          "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+          "https://iab-publicfiles.s3.amazonaws.com/vast/VAST-4.0-Short-Intro.mp4",
+          "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+          "https://iab-publicfiles.s3.amazonaws.com/vast/VAST-4.0-Short-Intro.mp4"
+        ];
+        var item = items[Math.floor(Math.random() * items.length)];
+
+        this.videoelement_.src = item;
 
         this.videoelement_.play();
         this.videoelementAd_.style.height =
@@ -241,7 +255,6 @@ VpaidVideoPlayer.prototype.updateVideoSlot_ = function () {
  * @private
  */
 VpaidVideoPlayer.prototype.updateVideoPlayerSize_ = function () {
-  console.log("size");
   try {
     this.videoSlot_.setAttribute("width", this.attributes_["width"]);
     this.videoSlot_.setAttribute("height", this.attributes_["height"]);
@@ -249,6 +262,18 @@ VpaidVideoPlayer.prototype.updateVideoPlayerSize_ = function () {
     this.videoSlot_.style.height = this.attributes_["height"] + "px";
   } catch (e) {
     /* no op*/
+  }
+
+  try {
+    this.tag_parent_.setAttribute("width", this.attributes_["width"]);
+    this.tag_parent_.setAttribute("height", this.attributes_["height"]);
+    this.tag_parent_.style.width = this.attributes_["width"] + "px";
+    this.tag_parent_.style.height = this.attributes_["height"] + "px";
+
+    this.videoelement_.style.height = this.attributes_["height"] + "px";
+    this.videoelementAd_.style.height = this.attributes_["height"] + "px";
+  } catch (error) {
+    console.log(error);
   }
 };
 
@@ -301,11 +326,11 @@ VpaidVideoPlayer.prototype.startAd = function () {
   // this.slot_.appendChild(videoelement);
 
   // document.getElementById("video_player").innerHTML = video_tags;
-  var tag_parent = document.createElement("div");
+  this.tag_parent_ = document.createElement("div");
   // var tag_parent = document.getElementById("video_tags");
-  tag_parent.style.position = "relative";
-  tag_parent.style.width = this.attributes_["width"] + "px";
-  tag_parent.style.height = this.attributes_["height"] + "px";
+  this.tag_parent_.style.position = "relative";
+  this.tag_parent_.style.width = this.attributes_["width"] + "px";
+  this.tag_parent_.style.height = this.attributes_["height"] + "px";
 
   var videoelement = document.createElement("video");
   videoelement.setAttribute("id", "video1");
@@ -318,10 +343,10 @@ VpaidVideoPlayer.prototype.startAd = function () {
 
   var sourceMP4 = document.createElement("source");
   sourceMP4.type = "video/mp4";
-  sourceMP4.src =
-    "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4";
+  // sourceMP4.src =
+  //   "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4";
   videoelement.appendChild(sourceMP4);
-  tag_parent.appendChild(videoelement);
+  this.tag_parent_.appendChild(videoelement);
 
   videoelement.muted = true;
   var videoelementAd = document.createElement("video");
@@ -334,35 +359,29 @@ VpaidVideoPlayer.prototype.startAd = function () {
   videoelementAd.style.bottom = 0;
   videoelementAd.style.left = 0;
   videoelementAd.style["transition"] = "height 1000ms ease-in-out";
-  // videoelementAd.style.height = "100px";
-  // videoelementAd.style.padding = "10px";
-
-  // videoelementAd.style["margin-top"] = "395px";
-  // videoelementAd.style["margin-left"] = "5px";
-  // videoelementAd.style["border-style"] = "solid";
-  // videoelementAd.style["border-width"] = "2px";
-  // videoelementAd.style["border-color"] = "white";
 
   var sourceMP4Ad = document.createElement("source");
   sourceMP4Ad.type = "video/mp4";
   sourceMP4Ad.src =
     "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4";
   videoelementAd.appendChild(sourceMP4Ad);
-  tag_parent.appendChild(videoelementAd);
+  this.tag_parent_.appendChild(videoelementAd);
 
   videoelementAd.play();
 
   var logo = document.createElement("img");
-  logo.src = "https://ghmoo.sse.codesandbox.io/static/infysticker.png";
+  logo.src =
+    this.parameters_.logo_url ||
+    "https://ghmoo.sse.codesandbox.io/static/infysticker.png";
   logo.style.position = "absolute";
   logo.style.height = "50px";
   logo.style.bottom = 0;
   logo.style.right = "5px";
   logo.style.opacity = "0.8";
   this.logo_ = logo;
-  tag_parent.appendChild(logo);
+  this.tag_parent_.appendChild(logo);
 
-  this.slot_.appendChild(tag_parent);
+  this.slot_.appendChild(this.tag_parent_);
   this.videoelementAd_ = videoelementAd;
   this.videoelement_ = videoelement;
 };

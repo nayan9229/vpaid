@@ -23,7 +23,7 @@
                             <ClickTracking id="123"></ClickTracking>
                         </VideoClicks>
                         <MediaFiles>
-                            <MediaFile apiFramework="VPAID" type="application/javascript">https://ghmoo.sse.codesandbox.io/static/infyvpaid.js</MediaFile>
+                            <MediaFile apiFramework="VPAID" type="application/javascript">https://raw.githubusercontent.com/nayan9229/vpaid/main/src/public/vpaid.js</MediaFile>
                         </MediaFiles>
                     </Linear>
                 </Creative>
